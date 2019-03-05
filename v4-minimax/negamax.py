@@ -30,10 +30,10 @@ def negamax(env, state, reward, done, depth):
         return -depth # how to get score??
 
     # RECURSIVE
-    candidates = env.available_actions()
-    for candidate in candidates:
+    actions = env.available_actions()
+    for action in actions:
         memento = env.create_memento()
-        (state, reward, done, _) = env.step(candidate)
+        (state, reward, done, _) = env.step(action)
         score = -negamax(env, state, reward, done, depth-1)
         env.set_memento(memento)
 
@@ -46,15 +46,15 @@ def negamax(env, state, reward, done, depth):
 
 def smart_turn(env):
     scores = {}
-    candidates = env.available_actions()
+    actions = env.available_actions()
 
-    for candidate in candidates:
+    for action in actions:
         memento = env.create_memento()
-        (state, reward, done, _) = env.step(candidate)
+        (state, reward, done, _) = env.step(action)
         score = -negamax(env, state, reward, done, 10)
         env.set_memento(memento)
 
-        scores[candidate] = score
+        scores[action] = score
 
     max_scores = max(scores.values())
     highest = [k for k,v in scores.items() if v == max_scores]

@@ -24,7 +24,7 @@ class SmartAgent(agent.AbstractAgent):
     def set_queue(self, seq):
         self.q.extend(seq)
 
-    def _next_action(self, obs, candidates):
+    def _next_action(self, obs, actions):
         return self.q.popleft()
 
     def feedback(self, reward):

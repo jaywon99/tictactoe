@@ -30,40 +30,40 @@ class qlearning:
         self.init_state(state)
         return self.q_scores[state][action]
 
-    def get_possible_scores(self, state, possible_actions = None):
+    def get_available_scores(self, state, available_actions = None):
         self.init_state(state)
-        if possible_actions == None:
-            possible_actions = range(self.n_actions)
-        scores = {i:self.q_scores[state][i] for i in possible_actions}
+        if available_actions == None:
+            available_actions = range(self.n_actions)
+        scores = {i:self.q_scores[state][i] for i in available_actions}
         return scores
 
-    def max(self, state, possible_actions = None):
-        scores = self.get_possible_scores(state, possible_actions)
+    def max(self, state, available_actions = None):
+        scores = self.get_available_scores(state, available_actions)
         return max(scores.values())
 
-    def argmax(self, state, possible_actions = None):
-        scores = self.get_possible_scores(state, possible_actions)
+    def argmax(self, state, available_actions = None):
+        scores = self.get_available_scores(state, available_actions)
         return max(scores, key=scores.get)
 
-    def rargmax(self, state, possible_actions = None):
-        scores = self.get_possible_scores(state, possible_actions)
+    def rargmax(self, state, available_actions = None):
+        scores = self.get_available_scores(state, available_actions)
         # print("SCORES", scores)
         max_value = max(scores.values())
         # print("MAX_VALUE", max_value)
         max_value_index = [k for k, v in scores.items() if v == max_value]
         # print("MAX_VALUE_INDEX", max_value_index)
-        # print(scores, max_value, max_value_index, self.q_scores[state], possible_actions)
+        # print(scores, max_value, max_value_index, self.q_scores[state], available_actions)
         return random.choice(max_value_index)
 
-    def rargmax_with_exploit(self, state, possible_actions = None):
+    def rargmax_with_exploit(self, state, available_actions = None):
         if random.random() < self.exploit_rate:
-            # print(len(possible_actions),end='')
-            if possible_actions:
-                return random.choice(possible_actions)
+            # print(len(available_actions),end='')
+            if available_actions:
+                return random.choice(available_actions)
             else:
                 return random.randint(0, self.n_actions-1)
         else:
-            return self.rargmax(state, possible_actions)
+            return self.rargmax(state, available_actions)
 
     def set(self, state, action, value):
         self.init_state(state)

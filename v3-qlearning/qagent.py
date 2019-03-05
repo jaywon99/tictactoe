@@ -26,12 +26,12 @@ class QAgent(agent.AbstractAgent):
         self.last_state = None
         self.last_action = None
 
-    def _next_action(self, state, possible_actions):
+    def _next_action(self, state, available_actions):
         state = utils.compact_observation(state)
         if self.mode == 1:
-            action = self.q.rargmax_with_exploit(state, possible_actions)
+            action = self.q.rargmax_with_exploit(state, available_actions)
         else:
-            action = self.q.rargmax(state, possible_actions)
+            action = self.q.rargmax(state, available_actions)
         self.last_state = state
         self.last_action = action
         return action

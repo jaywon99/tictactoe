@@ -2,38 +2,34 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "lib"))
 
-from tictactoe import TicTacToeBoard
+import tictactoe.gym as gym
+import tictactoe.agent as agent
+from tictactoe.utils import compact_observation 
 
-def find_next(t):
-    # print("TRACE", t.seq)
-    winner = t.is_win()
-    if winner != ' ':
-        print(t.seq, winner, t.get_board_id())
+MARKER={-1:'O', 0:'=', 1:'X'}
+def find_next(env, seq, state, reward, done):
+    if done:
+        print(seq, MARKER[reward], compact_observation(state))
         return
 
-    candidates = t.get_candidates()
-    ids = {}
-    for c in candidates[::-1]:
-        ids[t.get_board_id(t.seq+str(c))] = c
-    candidates = list(ids.values())
-    candidates.sort()
+    actions = env.available_actions()
 
-    for candidate in candidates:
-        t.play(candidate)
-        winner = t.is_win()
-        if winner != ' ':
-            print(t.seq, winner, t.get_board_id())
-            t.unplay()
+    for action in actions:
+        memento = env.create_memento()
+        (state, reward, done, _) = env.step(action)
+        if done:
+            print(seq+str(action), MARKER[reward], compact_observation(state))
+            env.set_memento(memento)
             return
-        t.unplay()
+        env.set_memento(memento)
 
-    for candidate in candidates:
-        t.play(candidate)
-        find_next(t)
-        t.unplay()
+    for action in actions:
+        memento = env.create_memento()
+        (state, reward, done, _) = env.step(action)
+        find_next(env, seq+str(action), state, reward, done)
+        env.set_memento(memento)
 
-
-t = TicTacToeBoard()
-t.init_board()
-find_next(t)
+env = gym.getEnv()
+env.reset()
+find_next(env, "", None, None, False)
 
