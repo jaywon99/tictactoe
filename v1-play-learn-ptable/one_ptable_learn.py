@@ -5,8 +5,8 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "lib"))
 import tictactoe.gym as gym
 import tictactoe.agent as agent
 import tictactoe.utils as utils
-from ptable_agent import SmartAgent
 
+from ptable_agent import SmartAgent
 from ptable import PredictionTable
 
 p_table = PredictionTable(learning_rate=0.5)
