@@ -58,23 +58,32 @@ def smart_turn(env):
 
     max_scores = max(scores.values())
     highest = [k for k,v in scores.items() if v == max_scores]
-    print(scores, max_scores, max(scores.values()), highest)
+    # print(scores, max_scores, max(scores.values()), highest)
     pos = random.choice(highest)
 
     return pos
 
-env = gym.getEnv()
-env.reset()
+class NegamaxAgent(agent.AbstractAgent):
+    def __init__(self, env):
+        super().__init__()
+        self.env = env
 
-done = False
-for c in sys.argv[1]:
-    (state, reward, done, _) = env.step(int(c))
-env.render()
+    def _next_action(self, obj, availables_actions):
+        return smart_turn(self.env)
 
-while not done:
-    # negamax.counter = 0
-    action = smart_turn(env)
-    # print(negamax.counter)
-    (state, reward, done, _) = env.step(action)
+if __name__ == "__main__":
+    env = gym.getEnv()
+    env.reset()
+
+    done = False
+    for c in sys.argv[1]:
+        (state, reward, done, _) = env.step(int(c))
     env.render()
+
+    while not done:
+        # negamax.counter = 0
+        action = smart_turn(env)
+        # print(negamax.counter)
+        (state, reward, done, _) = env.step(action)
+        env.render()
 

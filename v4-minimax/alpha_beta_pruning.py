@@ -82,18 +82,28 @@ def smart_turn(env):
 
     return pos
 
-env = gym.getEnv()
-env.reset()
+class ABPAgent(agent.AbstractAgent):
+    def __init__(self, env):
+        super().__init__()
+        self.env = env
 
-done = False
-for c in sys.argv[1]:
-    (state, reward, done, _) = env.step(int(c))
-env.render()
+    def _next_action(self, obj, availables_actions):
+        negamax.counter = 0
+        return smart_turn(self.env)
 
-while not done:
-    negamax.counter = 0
-    action = smart_turn(env)
-    # print(negamax.counter)
-    (state, reward, done, _) = env.step(action)
+if __name__ == "__main__":
+    env = gym.getEnv()
+    env.reset()
+
+    done = False
+    for c in sys.argv[1]:
+        (state, reward, done, _) = env.step(int(c))
     env.render()
+
+    while not done:
+        negamax.counter = 0
+        action = smart_turn(env)
+        # print(negamax.counter)
+        (state, reward, done, _) = env.step(action)
+        env.render()
 
