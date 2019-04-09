@@ -2,24 +2,31 @@ import sys
 import os
 sys.path.append(os.path.join(os.path.dirname(__file__), "..", "lib"))
 
+import random
+
 import tictactoe.agent as agent
 from tictactoe.utils import compact_observation 
 
-import random
-from ptable import PredictionTable 
+import ptable
 
 class SmartAgent(agent.AbstractAgent):
-    def __init__(self, p_table, random_rate=0.2, debug=False):
+    def __init__(self, random_rate=0.2, learning_rate=0.1, debug=False):
         super().__init__()
-        self.p_table = p_table
+        self.p_table = ptable.PredictionTable(learning_rate=learning_rate)
         self.random_rate = random_rate
         self.debug = debug
+
+    def save(self, filename):
+        self.p_table.save(filename)
+
+    def load(self, filename):
+        self.p_table.load(filename)
 
     def _history_compaction(self, obs, action):
         return (compact_observation(obs), action)
 
     def _next_action(self, obs, actions):
-        if random.random() < self.random_rate:
+        if self.train_mode and random.random() < self.random_rate:
             next_pos = random.choice(actions)
             if self.debug: print("SELECT", actions, "RANDOM", next_pos)
 
@@ -46,7 +53,7 @@ class SmartAgent(agent.AbstractAgent):
 
         return next_pos
 
-    def feedback(self, reward):
+    def episode_feedback(self, reward):
         # for winner
         (state, action) = self.pop_history()
         np = reward

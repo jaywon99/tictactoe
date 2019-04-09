@@ -6,19 +6,33 @@ def compact_observation(obs):
         _id = (_id << 2) | (digit & 3)
     return _id
 
-def play(env, dual, render = False):
+def play(env, dual, episode=-1, feedback = False, render = False):
     next_state = env.reset()
-    dual.reset()
+    dual.reset(feedback, episode)
     done = False
+    action = None
     while not done:
         if render:
             env.render()
         agent = dual.next_agent()
+        if feedback and action != None:
+            agent.feedback(next_state, reward, False)
+
         action = agent.next_action(next_state, env.available_actions())
         (next_state, reward, done, _) = env.step(action)
 
     if render:
         env.render()
+
+    if feedback:
+        if reward == 0:
+            dual.current_agent().feedback(next_state, 0, True)
+            dual.other_agent().feedback(next_state, 0, True)
+        else:
+            dual.current_agent().feedback(next_state, 1, True)
+            dual.other_agent().feedback(next_state, -1, True)
+        dual.current_agent().episode_feedback(1)
+        dual.other_agent().episode_feedback(-1)
 
     return reward
 
@@ -59,14 +73,14 @@ def do_player1_test(env, agent, next_state, seq):
 
 def test_player1(env, agent):
     next_state = env.reset()
-    agent.reset()
+    agent.reset(False, -1)
     done = False
 
     return do_player1_test(env, agent, next_state, "")
 
 def test_player2(env, agent):
     next_state = env.reset()
-    agent.reset()
+    agent.reset(False, -1)
     done = False
 
     return test_traverse(env, agent, next_state, "")

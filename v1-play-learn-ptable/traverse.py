@@ -6,14 +6,12 @@ import tictactoe.gym as gym
 import tictactoe.agent as agent
 import tictactoe.utils as utils
 
-from ptable_agent import SmartAgent
-from ptable import PredictionTable
+from agent import SmartAgent
 
-p_table = PredictionTable(learning_rate=0.5)
-p_table.load('p_table.dat')
-
-agent1 = SmartAgent(p_table, debug=False)
-agent2 = SmartAgent(p_table, debug=False)
+agent1 = SmartAgent(learning_rate=0.5, random_rate=0.0, debug=False)
+agent1.load("./models/p1.dat")
+agent2 = SmartAgent(learning_rate=0.5, random_rate=0.0, debug=False)
+agent2.load("./models/p2.dat")
 
 env = gym.getEnv()
 

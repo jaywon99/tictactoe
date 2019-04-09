@@ -6,16 +6,14 @@ import tictactoe.gym as gym
 import tictactoe.agent as agent
 import tictactoe.utils as utils
 
-from qagent import QAgent
-from qlearning import qlearning
+from agent import MyAgent
 
-q1 = qlearning(value=0, n_actions=9, learning_rate=0.1, discount=0.9, exploit_rate=0.2)
-q2 = qlearning(value=0, n_actions=9, learning_rate=0.1, discount=0.9, exploit_rate=0.2)
-q1.load("q1.dat")
-q2.load("q2.dat")
+env = gym.getEnv()
 
-agent1 = QAgent(q1)
-agent2 = QAgent(q2)
+agent1 = MyAgent(learning_rate=0.1, discount_rate=0.9, exploit_rate=0.2)
+agent1.load("./models/q1.dat")
+agent2 = MyAgent(learning_rate=0.1, discount_rate=0.9, exploit_rate=0.2)
+agent2.load("./models/q2.dat")
 
 env = gym.getEnv()
 

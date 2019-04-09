@@ -6,15 +6,12 @@ import tictactoe.gym as gym
 import tictactoe.agent as agent
 import tictactoe.utils as utils
 
-from ptable_agent import SmartAgent
-from ptable import PredictionTable
+from agent import SmartAgent
 
-p_table = PredictionTable(learning_rate=0.5)
-p_table.load('p_table.dat')
-print("TOTAL", p_table.step, "ROUND PLAYED")
-
-player1 = SmartAgent(p_table, debug=False)
-player2 = SmartAgent(p_table, debug=False)
+player1 = SmartAgent(learning_rate=0.5, debug=False)
+player1.load("./models/p1.dat")
+player2 = SmartAgent(learning_rate=0.5, debug=False)
+player2.load("./models/p2.dat")
 
 env = gym.getEnv()
 dual = agent.DualAgent(player1, player2)
@@ -27,22 +24,12 @@ STEP=1000
 # MAX=1000
 # STEP=100
 
-for step in range(p_table.step, p_table.step+MAX, STEP):
+for step in range(1, MAX, STEP):
     for step1 in range(STEP):
-        winner = utils.play(env, dual)
+        winner = utils.play(env, dual, step+step1, feedback=True, render=False)
 
-        if winner == 0: # TIE
-            player1.feedback(0.0)
-            player2.feedback(0.0)
-        elif winner == 1: # X win
-            player1.feedback(1.0)
-            player2.feedback(-1.0)
-        else: # O win
-            player1.feedback(-1.0)
-            player2.feedback(1.0)
-        p_table.next_step()
-
-    p_table.save('p_table.dat')
+    player1.save("p1.dat")
+    player2.save("p2.dat")
 
     count = {-1: 0, 1: 0, 0: 0}
     for step1 in range(1000):
