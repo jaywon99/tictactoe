@@ -8,7 +8,10 @@ import tictactoe.gym as gym
 import tictactoe.agent as agent
 import tictactoe.utils as utils
 
-from transposition import TranspositionTable
+if __name__ == "__main__":
+    from transposition import TranspositionTable
+else:
+    from .transposition import TranspositionTable
 
 tp = TranspositionTable()
 
