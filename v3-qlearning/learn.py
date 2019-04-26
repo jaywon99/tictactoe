@@ -33,17 +33,16 @@ for step in range(0, MAX, STEP):
     agent1.save("./models/q1-"+str(step)+".dat")
     agent2.save("./models/q2-"+str(step)+".dat")
 
-    count = {-1: 0, 1: 0, 0: 0}
+    count1 = {-1: 0, 1: 0, 0: 0}
     for step1 in range(100):
         winner = utils.play(env, dual_o, feedback = False)
-        count[winner] += 1
-    print("EPOCH", step+STEP, "X(NM)", count[1], "O(Q)", count[-1], "TIE", count[0])
+        count1[winner] += 1
 
-    count = {-1: 0, 1: 0, 0: 0}
+    count2 = {-1: 0, 1: 0, 0: 0}
     for step1 in range(100):
         winner = utils.play(env, dual_x, feedback = False)
-        count[winner] += 1
-    print("EPOCH", step+STEP, "X(Q)", count[1], "O(NM)", count[-1], "TIE", count[0])
+        count2[winner] += 1
+    print(step+STEP, count1[1], count1[-1], count1[0], count2[1], count2[-1], count2[0])
 
 agent1.save("./models/q1.dat")
 agent2.save("./models/q2.dat")

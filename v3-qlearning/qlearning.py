@@ -47,12 +47,12 @@ class qlearning:
 
     def rargmax(self, state, available_actions = None):
         scores = self.get_available_scores(state, available_actions)
-        # print("SCORES", scores)
+        print("SCORES", scores)
         max_value = max(scores.values())
-        # print("MAX_VALUE", max_value)
+        print("MAX_VALUE", max_value)
         max_value_index = [k for k, v in scores.items() if v == max_value]
-        # print("MAX_VALUE_INDEX", max_value_index)
-        # print(scores, max_value, max_value_index, self.q_scores[state], available_actions)
+        print("MAX_VALUE_INDEX", max_value_index)
+        print(scores, max_value, max_value_index, self.q_scores[state], available_actions)
         return random.choice(max_value_index)
 
     def rargmax_with_exploit(self, state, available_actions = None):

@@ -8,27 +8,18 @@ import tictactoe.utils as utils
 
 from agent import MyAgent
 
+from tictactoe.negamax.negamax import NegamaxAgent
+
 env = gym.getEnv()
+
+nmplayer = NegamaxAgent(env)
 
 agent1 = MyAgent(learning_rate=0.1, discount_rate=0.9, exploit_rate=0.2)
 agent1.load("./models/q1.dat")
 agent2 = MyAgent(learning_rate=0.1, discount_rate=0.9, exploit_rate=0.2)
 agent2.load("./models/q2.dat")
 
-dual = agent.DualAgent(agent1, agent2)
+dual_o = agent.DualAgent(nmplayer, agent2)
 
-agent4 = agent.RandomAgent()
-dual2 = agent.DualAgent(agent1, agent4)
-dual3 = agent.DualAgent(agent4, agent2)
-
-def test(env, dual, debug=False):
-    agent1.set_mode(0)
-    agent2.set_mode(0)
-    return utils.play(env, dual, render=True)
-
-scores = {-1: 0, 0: 0, 1: 0}
-for i in range(1):
-    scores[test(env, dual3, True)] += 1
-    print()
-print("SCORE", scores)
+utils.play(env, dual_o, feedback=False, render=True)
 
