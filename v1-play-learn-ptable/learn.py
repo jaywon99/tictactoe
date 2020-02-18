@@ -23,7 +23,7 @@ dual = agent.DualAgent(player1, player2)
 dual_x = agent.DualAgent(player1, nmplayer)
 dual_o = agent.DualAgent(nmplayer, player2)
 
-MAX=10000
+MAX=1000000
 STEP=100
 
 for step in range(1, MAX, STEP):
@@ -33,16 +33,15 @@ for step in range(1, MAX, STEP):
     player1.save("./models/p1.dat")
     player2.save("./models/p2.dat")
 
-    count = {-1: 0, 1: 0, 0: 0}
+    count1 = {-1: 0, 1: 0, 0: 0}
     for step1 in range(100):
         winner = utils.play(env, dual_o)
-        count[winner] += 1
-    print("STEP", step+STEP-1, "X(NM)", count[1], "O(P)", count[-1], "TIE", count[0])
+        count1[winner] += 1
 
-    count = {-1: 0, 1: 0, 0: 0}
+    count2 = {-1: 0, 1: 0, 0: 0}
     for step1 in range(100):
         winner = utils.play(env, dual_x)
-        count[winner] += 1
-    print("STEP", step+STEP-1, "X(P)", count[1], "O(NM)", count[-1], "TIE", count[0])
+        count2[winner] += 1
+    print(step+STEP-1, count1[1], count1[-1], count1[0], count2[1], count2[-1], count2[0])
 
 
