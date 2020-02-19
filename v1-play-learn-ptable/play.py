@@ -7,27 +7,36 @@ import tictactoe.agent as agent
 import tictactoe.utils as utils
 
 from agent import SmartAgent
+from tictactoe.negamax.negamax import NegamaxAgent
+
+env = gym.getEnv()
+nmplayer = NegamaxAgent(env)
 
 agent1 = SmartAgent(learning_rate=0.5, random_rate=0.0, debug=False)
 agent1.load("./models/p1.dat")
 agent2 = SmartAgent(learning_rate=0.5, random_rate=0.0, debug=False)
 agent2.load("./models/p2.dat")
 
-dual = agent.DualAgent(agent1, agent2)
+dual_x = agent.DualAgent(agent1, nmplayer)
+dual_o = agent.DualAgent(nmplayer, agent2)
+dual   = agent.DualAgent(agent1, agent2)
 
-env = gym.getEnv()
+dual.set_train_mode(False)
+for step1 in range(10000):
+    winner, history = utils.play(env, dual_o, recorded = True)
+    if winner != 0:
+        print("DUAL_O", winner, "".join([str(h) for h in history]))
+        break
 
-TO_MARKER={-1: 'O', 1: 'X', 0: '='}
-count = {-1: 0, 1: 0, 0: 0}
-for step in range(1):
-    winner = utils.play(env, dual, render = True)
-    print(winner)
-    print("WINNER", TO_MARKER[winner])
-    env.render()
+for step1 in range(10000):
+    winner = utils.play(env, dual_x)
+    if winner != 0:
+        print("DUAL_X", winner, "".join([str(h) for h in history]))
+        break
 
-    count[winner] += 1
-    if winner == -1:
-        sys.exit(0)
+for step1 in range(10000):
+    winner = utils.play(env, dual)
+    if winner != 0:
+        print("DUAL", winner, "".join([str(h) for h in history]))
+        break
 
-# p_table.save('p_table.dat')
-print(count)

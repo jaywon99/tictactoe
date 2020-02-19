@@ -29,6 +29,7 @@ EPOCH = 100
 for epoch in range(0, EPOCH, 10):
 
     print("EPOCH", epoch)
+    dual.set_train_mode(True)
     for step in range(10):
         p_table.next_step()
 
@@ -43,18 +44,9 @@ for epoch in range(0, EPOCH, 10):
             player2.set_queue(seq2)
             winner = utils.play(env, dual)
 
-            if winner == 0: # TIE
-                player1.feedback(0.0)
-                player2.feedback(0.0)
-            elif winner == 1: # X win
-                player1.feedback(1.0)
-                player2.feedback(-1.0)
-            else: # O win
-                player1.feedback(-1.0)
-                player2.feedback(1.0)
-
     p_table.save('tictactoe.dat')
 
+    dual.set_train_mode(False)
     count = {-1: 0, 1: 0, 0: 0}
     for step1 in range(1000):
         winner = utils.play(env, dual_o)

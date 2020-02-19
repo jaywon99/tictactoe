@@ -5,7 +5,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "lib"))
 import random
 
 import tictactoe.agent as agent
-from tictactoe.utils import compact_observation 
+from tictactoe.utils import OptimalBoard
 
 import ptable
 
@@ -22,10 +22,7 @@ class SmartAgent(agent.AbstractAgent):
     def load(self, filename):
         self.p_table.load(filename)
 
-    def _history_compaction(self, obs, action):
-        return (compact_observation(obs), action)
-
-    def _next_action(self, obs, actions):
+    def _next_action(self, state, actions):
         if self.train_mode and random.random() < self.random_rate:
             next_pos = random.choice(actions)
             if self.debug: print("SELECT", actions, "RANDOM", next_pos)
@@ -35,32 +32,36 @@ class SmartAgent(agent.AbstractAgent):
         found_p = -1.0
         found_c = []
         
-        _id = compact_observation(obs)
+        ob = OptimalBoard(state)
+        _id = ob.get_board_id()
         if self.debug: print("FROM", _id)
 
         scores = self.p_table.lookup(_id)
-        for action in actions:
+        converted_actions = ob.convert_available_actions(actions)
+        for action in converted_actions:
             p = scores[action]
-            if self.debug: print("ACTION", action, p)
+            if self.debug: print("ACTION", ob.convert_to_original_action(action), p)
             if p > found_p:
                 found_p = p
-                found_c = [action]
+                found_c = [ob.convert_to_original_action(action)]
             elif p == found_p:
-                found_c.append(action)
+                found_c.append(ob.convert_to_original_action(action))
 
         next_pos = random.choice(found_c)
         if self.debug: print("SELECT", found_c, found_p, next_pos)
 
         return next_pos
 
-    def episode_feedback(self, reward):
+    def _episode_feedback(self, reward):
         # for winner
-        (state, action) = self.pop_history()
+        (state, action, next_state, reward, done) = self.pop_history()
         np = reward
-        self.p_table.set(state, action, np)
+        ob = OptimalBoard(state)
+        self.p_table.set(ob.get_board_id(), ob.convert_available_action(action), np)
         # print("RESULT", board_winner, t.get_board_id(board_winner), np)
         while len(self.history) > 0:
-            (state, action) = self.pop_history()
-            np = self.p_table.learn(state, action, np)
+            (state, action, next_state, reward, done) = self.pop_history()
+            ob = OptimalBoard(state)
+            np = self.p_table.learn(ob.get_board_id(), ob.convert_available_action(action), np)
             # print("LEARN", board_winner, t.get_board_id(board_winner), np)
 

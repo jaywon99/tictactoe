@@ -4,10 +4,14 @@ class DualAgent:
         self.agent2 = agent2
         self.current = None
 
-    def reset(self, feedback, episode):
+    def reset(self):
         self.current = None
-        self.agent1.reset(feedback, episode)
-        self.agent2.reset(feedback, episode)
+        self.agent1.reset()
+        self.agent2.reset()
+
+    def set_train_mode(self, mode):
+        self.agent1.set_train_mode(mode)
+        self.agent2.set_train_mode(mode)
 
     def next_agent(self):
         if self.current:

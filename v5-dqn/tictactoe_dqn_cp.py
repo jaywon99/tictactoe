@@ -1,11 +1,13 @@
 from collections import deque
 import random
 import numpy as np
-import tensorflow as tf
+# import tensorflow as tf
+import tensorflow.compat.v1 as tf
+tf.disable_v2_behavior()
 
 from dqn import DQN
 
-TARGET_UPDATE_FREQUENCY = 5
+TARGET_UPDATE_FREQUENCY = 30
 TRAINSET_SIZE = 100000
 SAMPLE_SIZE = 64
 DISCOUNT_RATE = 0.999
@@ -95,8 +97,8 @@ class TicTacToeDQN():
         self.study_counter += 1
         if self.study_counter % TARGET_UPDATE_FREQUENCY == 0:
             self.copy()
+            print("LOSS", loss)
 
-        print("LOSS", loss)
         return loss
 
     def copy(self):

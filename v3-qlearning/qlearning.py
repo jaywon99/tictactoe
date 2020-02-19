@@ -10,6 +10,7 @@ class qlearning:
         self.discount = discount # gamma
         self.exploit_rate = exploit_rate # epsilon
         self.q_scores = {}
+        self.debug = False
 
     def load(self, filename):
         try:
@@ -47,12 +48,12 @@ class qlearning:
 
     def rargmax(self, state, available_actions = None):
         scores = self.get_available_scores(state, available_actions)
-        print("SCORES", scores)
+        if self.debug: print("SCORES", scores)
         max_value = max(scores.values())
-        print("MAX_VALUE", max_value)
+        if self.debug: print("MAX_VALUE", max_value)
         max_value_index = [k for k, v in scores.items() if v == max_value]
-        print("MAX_VALUE_INDEX", max_value_index)
-        print(scores, max_value, max_value_index, self.q_scores[state], available_actions)
+        if self.debug: print("MAX_VALUE_INDEX", max_value_index)
+        if self.debug: print(scores, max_value, max_value_index, self.q_scores[state], available_actions)
         return random.choice(max_value_index)
 
     def rargmax_with_exploit(self, state, available_actions = None):

@@ -20,9 +20,9 @@ def negamax(env, state, reward, done, depth):
     best_score = -11
 
     # Transposition Table related work
-    _id = utils.compact_observation(state)
+    _id = utils.board_to_id(state)
     cache = tp.get(_id)
-    if cache:
+    if cache is not None: # BUG FIX! cache can be 0, so should check None
         return cache
 
     # CHECK LEAF NODE / DO NOT NEED TO CHECK DEPTH = 0 BECASE TicTacToe is too small

@@ -20,7 +20,7 @@ def negamax(env, state, reward, done, depth, alpha, beta):
     alphaOrig = alpha
 
     # Transposition Table related work
-    _id = utils.compact_observation(state)
+    _id = utils.board_to_id(state)
     cache = tp.get(_id)
     if cache:
         val = cache['value']
