@@ -4,7 +4,7 @@ sys.path.append(os.path.join(os.path.dirname(__file__), "..", "lib"))
 
 import tictactoe.gym as gym
 import tictactoe.agent as agent
-import tictactoe.utils as utils
+import tictactoe.test_utils as utils
 
 import negamax
 import alpha_beta_pruning

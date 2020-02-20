@@ -3,6 +3,14 @@ import pickle
 
 MARKER = {-1: 'O', 0: ' ', 1: 'X'}
 class TicTacToeBoard:
+    WINNING_LINES = [[0, 1, 2],
+                     [3, 4, 5],
+                     [6, 7, 8],
+                     [0, 3, 6],
+                     [1, 4, 7],
+                     [2, 5, 8],
+                     [0, 4, 8],
+                     [2, 4, 6] ]
     def __init__(self):
         self.reset()
 
@@ -28,16 +36,7 @@ class TicTacToeBoard:
     def check_game_status(self):
         ''' Return (Finished, Winner)
         '''
-        checking = [
-                [0, 1, 2],
-                [3, 4, 5],
-                [6, 7, 8],
-                [0, 3, 6],
-                [1, 4, 7],
-                [2, 5, 8],
-                [0, 4, 8],
-                [2, 4, 6]]
-        for line in checking:
+        for line in TicTacToeBoard.WINNING_LINES:
             win = self.board[line[0]] + self.board[line[1]] + self.board[line[2]]
             if win !=0 and win % 3 == 0:
                 # game finished and winner is win//3
@@ -67,10 +66,8 @@ class TicTacToeBoard:
         self.board = pickle.loads(memento)
         self.done, _ = self.check_game_status()
 
-
 class TicTacToeAction:
     def __init__(self, board):
-        self.n = 9
         self.board = board
 
     def sample(self):
@@ -79,9 +76,9 @@ class TicTacToeAction:
     def contains(self, action):
         return action in self.board.available_actions()
 
+# TODO - Do we need this class?
 class TicTacToeObservation:
     def __init__(self, board):
-        self.shape = (1,)
         self.board = board
 
     def _get_obs(self, turn):
@@ -122,7 +119,7 @@ class TicTacToeEnv:
 
     def step(self, action):
         if self.board.is_game_finished():
-            return self.observation_space._get_obs(self.board, self.turn), 0, True, None
+            return self.observation_space._get_obs(self.turn), 0, True, None
 
         done, reward = self.board.step(action, self.turn)
 
