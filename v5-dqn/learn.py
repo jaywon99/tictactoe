@@ -32,7 +32,7 @@ dual_x = agent.DualAgent(agent1, nmplayer)
 dual_o = agent.DualAgent(nmplayer, agent2)
 
 EPOCH = 1000000
-STEP = 1000
+STEP = 100
 for step in range(1, EPOCH, STEP):
     dual.set_train_mode(True)
     for step1 in range(STEP):
@@ -40,7 +40,7 @@ for step in range(1, EPOCH, STEP):
 
     print("STEP", step+step1)
     agent1.save("./models/dqn1.ckpt")
-    agent1.save("./models/dqn2.ckpt")
+    agent2.save("./models/dqn2.ckpt")
 
     dual.set_train_mode(False)
     count1 = {-1: 0, 1: 0, 0: 0}
