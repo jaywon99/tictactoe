@@ -1,48 +1,54 @@
+from collections import deque
+import random
 import numpy as np
-# import tensorflow as tf
-import tensorflow.compat.v1 as tf
-tf.disable_v2_behavior()
 
-class DQN:
-    def __init__(self, layers, name="main", lr=0.001):
-        self.layers = layers
-        self.net_name = name
-        self.lr = lr
+from dnn import DNN
 
-        self._build_network()
+TRAINSET_SIZE = 100000
+SAMPLE_SIZE = 64
+DISCOUNT_RATE = 0.999
 
-    def _build_network(self):
-        self._X = tf.placeholder(tf.float32, [None, self.layers[0]], name="input")
-        self._Y = tf.placeholder(tf.float32, [None, self.layers[-1]], name="output")
-        net = self._X
-        for i in range(1, len(self.layers)-1):
-            net = tf.layers.dense(net, self.layers[i], activation=tf.nn.tanh)
-        self._Q = tf.layers.dense(net, self.layers[-1])
+FREQUENT_COPY=16
+loss_counter = 0
 
-        # self._loss = tf.losses.softmax_cross_entropy(self._Y, self._Q)
-        self._loss = tf.losses.mean_squared_error(self._Y, self._Q)
-        self._train = tf.train.AdamOptimizer(self.lr).minimize(self._loss)
-        # self._train = tf.train.RMSPropOptimizer(self.lr, decay=0.75).minimize(self._loss)
+class DQN(DNN):
+    def __init__(self, layers=None, name="main", lr=0.0001):
+        super().__init__(layers, name, lr)
+        self.train_set = deque(maxlen=TRAINSET_SIZE)
 
-    def set_session(self, session):
-        self.session = session
+    def predict_one(self, state):
+        # print("PREDICT_ONE", state)
+        return np.argmax(self.predict(state), axis=1)[0]
 
-    def predict(self, state):
-        x = np.reshape(state, [-1, self.layers[0]])
-        return self.session.run(self._Q, feed_dict={self._X: x})
+    def add_train_set(self, state, action, reward, next_state, done):
+        # print("ADD_TRAIN_SET")
+        self.train_set.append([state, action, reward, next_state, done])
+        # print(self.train_set[-1])
 
-    def update(self, x_stack, y_stack):
-        self.session.run([self._loss, self._train], {self._X: x_stack, self._Y: y_stack})
-        self.session.run([self._loss, self._train], {self._X: x_stack, self._Y: y_stack})
-        self.session.run([self._loss, self._train], {self._X: x_stack, self._Y: y_stack})
-        self.session.run([self._loss, self._train], {self._X: x_stack, self._Y: y_stack})
-        return self.session.run([self._loss, self._train], {self._X: x_stack, self._Y: y_stack})
+    def study(self):
+        if len(self.train_set) < SAMPLE_SIZE:
+            return
+        samples = random.sample(self.train_set, SAMPLE_SIZE)
 
-    def save(self, filename):
-        saver = tf.train.Saver()
-        saver.save(self.session, filename)
+        state_array = np.vstack([x[0] for x in samples])
+        action_array = np.array([x[1] for x in samples])
+        reward_array = np.array([x[2] for x in samples])
+        next_state_array = np.vstack([x[3] for x in samples])
+        done_array = np.array([x[4] for x in samples])
 
-    def load(self, filename):
-        saver = tf.train.Saver()
-        saver.restore(self.session, filename)
+        X_batch = state_array
+        y_batch = self.predict(state_array)
+
+        # Write using TeX (Basic Q-Learning)
+        Q_target = reward_array + DISCOUNT_RATE * np.max(self.predict(next_state_array), axis=1) * ~done_array
+        y_batch[np.arange(len(X_batch)), action_array] = Q_target
+
+        loss, _ = self.update(X_batch, y_batch)
+
+        global loss_counter
+        loss_counter += 1
+        if loss_counter > 100:
+            loss_counter = 0
+            print("LOSS", loss)
+        return loss
 

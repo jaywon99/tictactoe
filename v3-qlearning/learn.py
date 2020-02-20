@@ -33,7 +33,6 @@ for step in range(0, MAX, STEP):
     for step1 in range(STEP):
         utils.play(env, dual, render=False)
 
-    dual.set_train_mode(False)
     agent1.save("./models/q1-"+str(step)+".dat")
     agent2.save("./models/q2-"+str(step)+".dat")
 

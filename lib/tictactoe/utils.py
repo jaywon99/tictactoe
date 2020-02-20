@@ -33,6 +33,9 @@ class OptimalBoard:
     def get_board_id(self):
         return self.board_id
 
+    def get_optimal_board(self):
+        return self.optimized_board
+
     def convert_available_actions(self, available_actions):
         C = CONVERSIONS[self.idx]
         return [C[action] for action in available_actions]
