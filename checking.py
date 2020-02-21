@@ -36,7 +36,8 @@ if __name__ == "__main__":
         import dqn as learning_alg
         main(learning_alg.checking)
     elif sys.argv[1] == "ddqn":
-        pass
+        import ddqn as learning_alg
+        main(learning_alg.checking)
     elif sys.argv[1] == "pgn":
         pass
     else:

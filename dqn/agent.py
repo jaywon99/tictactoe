@@ -13,18 +13,18 @@ class MyAgent(agent.AbstractAgent):
     def __init__(self, egreedy=0.2):
         super().__init__()
         self.mode = 0
-        self.dqn = DQN(layers=[INPUT_SIZE, 54, 54, 9], lr=0.001)
+        self.network = DQN(layers=[INPUT_SIZE, 54, 54, 9], lr=0.001)
         self.egreedy = egreedy
 
     def save(self, filename):
-        self.dqn.save(filename)
+        self.network.save(filename)
 
     def load(self, filename):
-        self.dqn.load(filename)
+        self.network.load(filename)
 
     def set_session(self, session):
         ''' set tensorflow session '''
-        self.dqn.set_session(session)
+        self.network.set_session(session)
 
     @staticmethod
     def convert_state(state):
@@ -52,7 +52,6 @@ class MyAgent(agent.AbstractAgent):
 
         raise Exception
 
-
     def _next_action(self, state, available_actions):
         optimal_board = OptimalBoard(state)
         converted_actions = optimal_board.convert_available_actions(available_actions)
@@ -62,14 +61,14 @@ class MyAgent(agent.AbstractAgent):
             if random.random() < self.egreedy:
                 action = random.choice(converted_actions)
             else:
-                action = self.dqn.predict_one(converted_state)
+                action = self.network.predict_one(converted_state)
         else:
-            action = self.dqn.predict_one(converted_state)
+            action = self.network.predict_one(converted_state)
 
         if action not in converted_actions:
             # 여기에 뭐를 학습으로 넣을 지 고민
             # 아니면, predict_one에서 필터를 넣을 지 고민
-            self.dqn.add_train_set(converted_state, action, -1, self.convert_state([-1]*9), True)
+            self.network.add_train_set(converted_state, action, -1, self.convert_state([-1]*9), True)
             action = random.choice(converted_actions)
 
         original_action = optimal_board.convert_to_original_action(action)
@@ -83,9 +82,9 @@ class MyAgent(agent.AbstractAgent):
         next_ob = OptimalBoard(next_state)
         converted_next_state = self.convert_state(next_ob.get_optimal_board())
 
-        self.dqn.add_train_set(converted_state,
-                               converted_action,
-                               reward,
-                               converted_next_state,
-                               done)
-        self.dqn.study()
+        self.network.add_train_set(converted_state,
+                                   converted_action,
+                                   reward,
+                                   converted_next_state,
+                                   done)
+        self.network.study()

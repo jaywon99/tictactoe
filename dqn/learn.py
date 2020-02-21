@@ -8,6 +8,8 @@ from tictactoe.agent import DualAgent
 
 from .agent import MyAgent
 
+tf.disable_v2_behavior()
+
 AGENT1_DATA_PATH = "./models/dqn1.ckpt"
 AGENT2_DATA_PATH = "./models/dqn2.ckpt"
 

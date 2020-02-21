@@ -1,4 +1,4 @@
-''' Deep Q-Learning checking '''
+''' Double Deep Q-Learning checking '''
 
 # import tensorflow as tf
 import tensorflow.compat.v1 as tf
@@ -10,8 +10,8 @@ from .agent import MyAgent
 
 tf.disable_v2_behavior()
 
-AGENT1_DATA_PATH = "./models/dqn1.ckpt"
-AGENT2_DATA_PATH = "./models/dqn2.ckpt"
+AGENT1_DATA_PATH = "./models/ddqn1.ckpt"
+AGENT2_DATA_PATH = "./models/ddqn2.ckpt"
 
 def build_agent():
     ''' build agent for learning '''
@@ -30,7 +30,7 @@ def build_agent():
     return agent1, agent2
 
 def checking(env, best_player):
-    ''' Deep Q-Learning checking '''
+    ''' Double Deep Q-Learning checking '''
 
     agent1, agent2 = build_agent()
 

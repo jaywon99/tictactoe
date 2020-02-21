@@ -7,10 +7,10 @@ tf.disable_v2_behavior()
 
 class DNN:
     ''' DNN class '''
-    def __init__(self, layers, name="main", learing_rate=0.001):
+    def __init__(self, layers, name="main", learning_rate=0.001):
         self.layers = layers
         self.net_name = name
-        self.learing_rate = learing_rate
+        self.learning_rate = learning_rate
         self.session = None
 
         self._build_network()
@@ -26,8 +26,8 @@ class DNN:
 
         # self.loss = tf.losses.softmax_cross_entropy(self.Y, self.Q)
         self.loss = tf.losses.mean_squared_error(self.Y, self.Q)
-        self.train = tf.train.AdamOptimizer(self.learing_rate).minimize(self.loss)
-        # self.train = tf.train.RMSPropOptimizer(self.learing_rate, decay=0.75).minimize(self.loss)
+        self.train = tf.train.AdamOptimizer(self.learning_rate).minimize(self.loss)
+        # self.train = tf.train.RMSPropOptimizer(self.learning_rate, decay=0.75).minimize(self.loss)
 
     def set_session(self, session):
         ''' set tensorflow session '''
@@ -50,5 +50,8 @@ class DNN:
 
     def load(self, filename):
         ''' load network variables '''
-        saver = tf.train.Saver()
-        saver.restore(self.session, filename)
+        try:
+            saver = tf.train.Saver()
+            saver.restore(self.session, filename)
+        except Exception:
+            print("Loading Exception") # loading error - ignore
