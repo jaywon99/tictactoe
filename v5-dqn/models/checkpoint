@@ -1,2 +1,0 @@
-model_checkpoint_path: "dqn2.ckpt"
-all_model_checkpoint_paths: "dqn2.ckpt"
