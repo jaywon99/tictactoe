@@ -1,92 +1,69 @@
-import sys
-import os
-sys.path.append(os.path.join(os.path.dirname(__file__), "..", "lib"))
+''' implement negamax algorithm '''
 
 import random
 
-import tictactoe.gym as gym
 import tictactoe.agent as agent
 import tictactoe.utils as utils
 
-if __name__ == "__main__":
-    from transposition import TranspositionTable
-else:
-    from .transposition import TranspositionTable
+from .transposition import TranspositionTable
 
 tp = TranspositionTable()
 
-def negamax(env, state, reward, done, depth):
+def negamax(env, state=None, reward=0, done=False, depth=10):
+    ''' implement negamax algorithm
+    https://en.wikipedia.org/wiki/Negamax
+    '''
     # negamax.counter += 1
-    best_score = -11
 
     # Transposition Table related work
     _id = utils.board_to_id(state)
     cache = tp.get(_id)
     if cache is not None: # BUG FIX! cache can be 0, so should check None
-        return cache
+        # case 1
+        # return cache
+        # case 2
+        return random.choice(cache)
 
     # CHECK LEAF NODE / DO NOT NEED TO CHECK DEPTH = 0 BECASE TicTacToe is too small
-    if done and reward == 0:
-        return 0
     if done:
+        if reward == 0:
+            return (0, None)
         # return len(t.seq) - 10 # how to get score??
-        return -depth # how to get score??
+        return (-depth, None) # how to get score??
 
     # RECURSIVE
     actions = env.available_actions()
+    best_score = -11
+    best_scores = []
     for action in actions:
         memento = env.create_memento()
         (state, reward, done, _) = env.step(action)
-        score = -negamax(env, state, reward, done, depth-1)
+        score, _ = negamax(env, state, reward, done, depth-1)
+        score = -score # negamax
         env.set_memento(memento)
 
         if score > best_score:
             best_score = score
+            best_scores = [(score, action)]
+        elif score == best_score:
+            best_scores.append((score, action))
 
-    tp.put(_id, best_score)
+    # case 1: choose random value 1 time
+    # choosed_result = random.choice(best_scores)
+    # tp.put(_id, choosed_result)
+    # return choosed_result
 
-    return best_score
-
-def smart_turn(env):
-    scores = {}
-    actions = env.available_actions()
-
-    for action in actions:
-        memento = env.create_memento()
-        (state, reward, done, _) = env.step(action)
-        score = -negamax(env, state, reward, done, 10)
-        env.set_memento(memento)
-
-        scores[action] = score
-
-    max_scores = max(scores.values())
-    highest = [k for k,v in scores.items() if v == max_scores]
-    # print(scores, max_scores, max(scores.values()), highest)
-    pos = random.choice(highest)
-
-    return pos
+    # case 2: choose random value every time
+    tp.put(_id, best_scores)
+    return random.choice(best_scores)
 
 class NegamaxAgent(agent.AbstractAgent):
+    ''' negamax tic-tac-toe agent '''
     def __init__(self, env):
         super().__init__()
         self.env = env
 
-    def _next_action(self, obj, availables_actions):
-        return smart_turn(self.env)
-
-if __name__ == "__main__":
-    env = gym.getEnv()
-    env.reset()
-
-    done = False
-    for c in sys.argv[1]:
-        (state, reward, done, _) = env.step(int(c))
-    env.render()
-
-    while not done:
-        # negamax.counter = 0
-        action = smart_turn(env)
-        # print(negamax.counter)
-        (state, reward, done, _) = env.step(action)
-        env.render()
-
+    def _next_action(self, state, available_actions):
+        # return smart_turn(self.env)
+        (_, next_action) = negamax(self.env, state)
+        return next_action
