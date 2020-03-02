@@ -2,6 +2,13 @@ import random
 
 class AbstractAgent:
     ''' Abstract Agent '''
+
+    HISTORY_STATE = 0
+    HISTORY_ACTION = 1
+    HISTORY_NEXT_STATE = 2
+    HISTORY_REWARD = 3
+    HISTORY_DONE = 4
+
     def __init__(self):
         self.history = []
         self.train_mode = False
@@ -60,11 +67,11 @@ class AbstractAgent:
         '''
         self.history[-1].extend([next_state, reward, done])
         if self.train_mode:
-            self._feedback(self.history[-1][0],
-                           self.history[-1][1],
-                           self.history[-1][2],
-                           self.history[-1][3],
-                           self.history[-1][4])
+            self._feedback(self.history[-1][self.HISTORY_STATE],     # state
+                           self.history[-1][self.HISTORY_ACTION],     # action
+                           self.history[-1][self.HISTORY_NEXT_STATE],     # next_state
+                           self.history[-1][self.HISTORY_REWARD],     # reward
+                           self.history[-1][self.HISTORY_DONE])     # done
 
     def _episode_feedback(self, reward):
         ''' feedback after full game finished.

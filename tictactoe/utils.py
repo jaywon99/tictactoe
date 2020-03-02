@@ -76,11 +76,13 @@ def play(env, dual, render = False, recorded = False):
     if reward == 0: # means TIE
         dual.current_agent().feedback(next_state, 0, True)
         dual.other_agent().feedback(next_state, 0, True)
+        dual.current_agent().episode_feedback(0)
+        dual.other_agent().episode_feedback(0)
     else: # means current_agent WIN
         dual.current_agent().feedback(next_state, 1, True)
         dual.other_agent().feedback(next_state, -1, True)
-    dual.current_agent().episode_feedback(1)
-    dual.other_agent().episode_feedback(-1)
+        dual.current_agent().episode_feedback(1)
+        dual.other_agent().episode_feedback(-1)
 
     if recorded:
         return (reward, history)
