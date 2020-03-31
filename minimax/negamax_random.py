@@ -27,15 +27,15 @@ def negamax(env, state=None, reward=0, done=False, depth=10):
     cache = tp.get(_id)
     if cache is not None: # BUG FIX! cache can be 0, so should check None
         # case 1
-        return cache
+        # return cache
         # case 2
-        # return random.choice(cache)
+        return cache[0], random.choice(cache[1])
 
     # RECURSIVE
     actions = env.available_actions()
     random.shuffle(actions)
     best_score = -11
-    best_move = -1
+    best_actions = []
     for action in actions:
         memento = env.create_memento()
         (state, reward, done, _) = env.step(action)
@@ -46,7 +46,9 @@ def negamax(env, state=None, reward=0, done=False, depth=10):
         # pick from all best moves
         if score > best_score:
             best_score = score
-            best_move = action
+            best_actions = [action]
+        elif score == best_score:
+            best_actions.append(action)
 
     # case 1: choose random value 1 time
     # choosed_result = random.choice(best_scores)
@@ -54,8 +56,8 @@ def negamax(env, state=None, reward=0, done=False, depth=10):
     # return choosed_result
 
     # case 2: choose random value every time
-    tp.put(_id, (best_score, best_move))
-    return (best_score, best_move)
+    tp.put(_id, (best_score, best_actions))
+    return (best_score, random.choice(best_actions))
 
 class NegamaxAgent(agent.AbstractAgent):
     ''' negamax tic-tac-toe agent '''

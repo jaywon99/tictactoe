@@ -13,6 +13,7 @@ class TranspositionTable:
         self.table[key] = value
 
 class ABPTranspositionTable: # Alpha-Beta-Pruning Transposition Table
+    LOWERBOUND, EXACT, UPPERBOUND = -1,0,1
     def __init__(self):
         self.table = {}
 

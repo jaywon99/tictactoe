@@ -43,18 +43,20 @@ def negamax_alpha_beta_pruning(tp, env, state=None, reward=0, done=False, depth=
     actions = env.available_actions()
     random.shuffle(actions)
     best_score = -math.inf
-    best_move = -1
+    best_actions = []
     for action in actions:
         memento = env.create_memento()
         (state, reward, done, _) = env.step(action)
-        score, _ = -negamax(tp, env, state, reward, done, depth-1, alpha=-beta, beta=-alpha)
+        score, _ = -negamax(env, state, reward, done, depth-1, alpha=-beta, beta=-alpha)
         score = -score # negamax
         env.set_memento(memento)
 
         # just pick up 1 first best move (random.shuffle make randomness)
         if score > best_score:
             best_score = score
-            best_move = action
+            best_actions = [action]
+        elif score == best_score:
+            best_actions.append(action)
 
         if alpha < score:
             alpha = score
@@ -71,7 +73,8 @@ def negamax_alpha_beta_pruning(tp, env, state=None, reward=0, done=False, depth=
 
     tp.put(key=_id, depth=depth, value=best_score, flag=flag)
 
-    return (alpha, best_move)
+    return random.choice(best_scores)
+
 
 class ABPAgent(agent.AbstractAgent):
     def __init__(self, env):
