@@ -1,44 +1,54 @@
-'''
-Main learning start up point by learning algorithm
-'''
-
 import sys
+import random
 
-import tictactoe.gym as gym
-from tictactoe.negamax.negamax import NegamaxAgent
+from boardAI import RandomPlayer, Arena, PlayerMode, TensorflowPlayer
+from tictactoe import TicTacToeBoard
+from players import load_player
 
-def usage():
-    '''
-    print usage and exit
-    '''
-    print("Usage: learn.py algorithm")
-    print("\talgorithm: ptable, qlearning, dqn, ddqn, pgn")
-    sys.exit(-1)
+def check_tensorflow_session(players):
+    if len(players) == 0:
+        return
 
-def main(learn):
-    ''' main function '''
-    env = gym.getEnv()
-    best_player = NegamaxAgent(env)
+    # TODO: Keras로 바꿀 것
+    import tensorflow.compat.v1 as tf
+    tf.disable_v2_behavior()
 
-    learn(env, best_player)
+    sess = tf.Session()
+    for player in players:
+        if isinstance(player, TensorflowPlayer):
+            player.set_session(sess)
 
-if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        usage()
+    sess.run(tf.global_variables_initializer())
 
-    if sys.argv[1] == "ptable":
-        import ptable as learning_alg
-        main(learning_alg.learn)
-    elif sys.argv[1] == "qlearning":
-        import qlearning as learning_alg
-        main(learning_alg.learn)
-    elif sys.argv[1] == "dqn":
-        import dqn as learning_alg
-        main(learning_alg.learn)
-    elif sys.argv[1] == "ddqn":
-        import ddqn as learning_alg
-        main(learning_alg.learn)
-    elif sys.argv[1] == "pgn":
-        pass
-    else:
-        usage()
+board = TicTacToeBoard()
+players = []
+players.append(load_player(name="RandomPlayer1", storage="models/random_player1", cls="RandomPlayer"))
+players.append(load_player(name="PTablePlayer1", storage="models/ptable_player1", cls='PredictionTablePlayer'))
+players.append(load_player(name="QPlayer1", storage="models/q_player1", cls="QLearningPlayer"))
+players.append(load_player(name="DQNPlayer1", storage="models/dqn_player1", cls="DQNPlayer", network_storage='./models/dqn1.ckpt'))
+players.append(load_player(name="DDQNPlayer1", storage="models/ddqn_player1", cls="DDQNPlayer", network_storage='./models/ddqn1.ckpt'))
+players.append(load_player(name="NegamaxPlayer", storage="models/negamax_player1", cls="NegamaxPlayer"))
+players.append(load_player(name="MCTSRandomPlayer", storage="models/mcts_random_player1", cls="MCTSRandomPlayer"))
+check_tensorflow_session(players)
+
+# arena_train.reset()
+# arena_train.duel(render='human')
+
+# arena_play.reset()
+# arena_play.duel(render='human')
+
+for i in range(1000):
+    for _ in range(100):        
+        arena_train = Arena(board, random.sample(players, 2), mode = PlayerMode.TRAIN)
+        arena_train.reset()
+        arena_train.duel(render=None)
+
+    for _ in range(100):
+        arena_play = Arena(board, random.sample(players, 2), mode = PlayerMode.PLAY)
+        arena_play.reset()
+        arena_play.duel(render=None)
+    print("PLAY", i*100, [str(p.elo) for p in players])
+
+    for player in players:
+        player.save()
+

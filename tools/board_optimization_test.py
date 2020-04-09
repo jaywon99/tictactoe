@@ -1,7 +1,7 @@
 
 def board_to_id(board):
     _id = 0
-    for digit in (obs):
+    for digit in (board):
         _id = (_id << 2) | (digit & 3)
     return _id
 

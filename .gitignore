@@ -2,3 +2,4 @@
 **/models/**
 .pylintrc
 .vscode/
+.venv/

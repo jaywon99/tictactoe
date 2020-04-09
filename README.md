@@ -2,7 +2,7 @@
 
 * MAKE LIBRARY
 ** gym like library (need to include gym??)
-** agent framework and dual framework
+** agent framework and duel framework
 
 * v1 - learn from random play - not working well
 * v2 - learn from all playing data - not working well
