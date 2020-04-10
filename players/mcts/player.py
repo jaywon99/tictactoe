@@ -16,14 +16,15 @@ class MCTSRandomPlayer(AbstractPlayer):
 
     @staticmethod
     def _default_stats():
+        ''' to use pickle, required to declare to method instead of lambda '''
         return [0, 0]
 
-    def __init__(self, simulations=10, C=1/math.sqrt(2), *args, **kwargs):
-        super().__init__(*args, **kwargs)
+    def __init__(self, simulations=1, C=1/math.sqrt(2), *args, **kwargs):
         self.simulations = int(simulations)
         self.C = float(C)
         self._stats = defaultdict(MCTSRandomPlayer._default_stats)
         self.DEBUG = False
+        super().__init__(*args, **kwargs)
 
     def serialize(self):
         return pickle.dumps(self._stats)
@@ -32,12 +33,14 @@ class MCTSRandomPlayer(AbstractPlayer):
         if obj != None:
             self._stats = pickle.loads(obj)
 
+    @staticmethod
+    def to_board_id(board):
+        ''' board id to make node '''
+        return OptimalBoard(board).board_id
+        # return OptimalBoard.board_to_id(board)
+
     def _choose(self, state, available_actions):
         # return smart_turn(self.env)
-        # state는 0,1,-1로 이루어진 9칸 array
-        # 1. board를 만들 필요가 있을까? 아니면 그냥 state로 동작할까?
-        # state, color, available_actions로 negamax를 동작
-        # available_actions가 negamax에 필요한가? 그렇지 않음
         my_color = TicTacToeBoard.COLOR_TO_INTERNAL[self.color]
         stats, depth = self.search(state, my_color, self.simulations, self.C)
         return self.select_best_move(stats, depth, state, my_color)
@@ -67,7 +70,7 @@ class MCTSRandomPlayer(AbstractPlayer):
                 reward, done = SP.play(node, action, color)
                 color = SP.next(color)
 
-                states.append(OptimalBoard.board_to_id(node))
+                states.append(MCTSRandomPlayer.to_board_id(node))
 
                 if not select:
                     break
@@ -92,28 +95,38 @@ class MCTSRandomPlayer(AbstractPlayer):
         return stats, max_depth
 
     def select_next_move(self, stats, board, color, C):
-        """Select the next state and consider if it should be expanded"""
+        """Select the next state and consider if it should be expanded (UCT)"""
 
         bestscore = None
         bestmove = None
 
+        # my_id = MCTSRandomPlayer.to_board_id(board)
+
         children = []
         for action in SP.available_actions(board):
+            # clone and play mode - can be play and rollback mode
             next_board = board[:]
             SP.play(next_board, action, color)
-            children.append((action, stats[OptimalBoard.board_to_id(next_board)]))
+            children.append((action, stats[MCTSRandomPlayer.to_board_id(next_board)]))
 
         total_n = sum(x[0] for (_, x) in children)
 
         for child_move, child_stat in children:
             n, w = child_stat
-            if n == 0:
+            if n == 0: # 한번도 안가봤으면 가보자!
                 return child_move, False
-            else:
+            else: # 승률이 높고 (exploitation), 가장 적게 가본 곳이 좋은 곳 (exploration)
                 score = (w / n) + C * math.sqrt(2 * math.log(total_n) / n)
+                # if my_id == 70645:
+                #     print("CHECK IN ", my_id, child_move, w, n, score, bestscore, next_id)
+                # if next_id == 119797:
+                #     print("JUMP IN ", my_id, child_move, w, n, score, bestscore, next_id)
                 if bestscore is None or score > bestscore:
                     bestscore = score
                     bestmove = child_move
+
+        # if my_id == 70645:
+        #     print("SELECTED", bestmove, bestscore)
 
         assert bestmove is not None
         return bestmove, True        
@@ -128,20 +141,23 @@ class MCTSRandomPlayer(AbstractPlayer):
         for action in SP.available_actions(board):
             next_board = board[:]
             SP.play(next_board, action, color)
-            n, w = stats[OptimalBoard.board_to_id(next_board)]
+            n, w = stats[MCTSRandomPlayer.to_board_id(next_board)]
+            if n == 0:
+                continue
             total_n += n
             if self.DEBUG: print('Move %d score: %d/%d (%0.1f%%)' % (action, w, n, w/n*100))
-            if n > bestscore or (n == bestscore and random.random() <= 0.5):
+            if n > bestscore or (n == bestscore and random.random() <= 0.5): # 가장 많이 방문해 본 길을 따라 간다. WHY???
                 bestmove = action
                 bestscore = n
+
         assert bestmove is not None
 
-        if self.DEBUG: print('Maximum depth: %d, Total simulations: %d' % (depth, total_n))
+        if self.DEBUG: print('Maximum depth: %d, Total simulations: %d on %d' % (depth, total_n, MCTSRandomPlayer.to_board_id(board)))
 
         return bestmove
 
     def simulate(self, board, start_color):
-        # random simulator
+        # random simulator ( Light playouts )
         node = board[:]
         done = False
         color = start_color

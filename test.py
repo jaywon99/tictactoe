@@ -54,6 +54,7 @@ arena_play = Arena(board, [player1, player2], mode=PlayerMode.PLAY)
 # arena_play.duel(render='human')
 # print(arena_play.results, player1.elo, player2.elo)
 
+print(player1.elo, player2.elo)
 for _ in range(100):
     for i in range(1000):
         arena_train.reset()
