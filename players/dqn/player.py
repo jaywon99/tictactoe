@@ -3,13 +3,13 @@
 import random
 import pickle
 
-from boardAI import TensorflowPlayer
+from boardAI import AbstractPlayer
 from tictactoe import OptimalBoard
 
 from .dqn import DQN
 
 INPUT_SIZE = 18
-class DQNPlayer(TensorflowPlayer):
+class DQNPlayer(AbstractPlayer):
     ''' DQN Learning Agent '''
     def __init__(self, egreedy=0.2, hidden_layers=[54, 54], learing_rate=0.001, network_storage=None, *args, **kwargs):
         self.hidden_layers = hidden_layers
@@ -19,6 +19,7 @@ class DQNPlayer(TensorflowPlayer):
         super().__init__(*args, **kwargs)
 
     def serialize(self):
+        # store network and configuration separate
         self.network.save(self.network_storage)
         return pickle.dumps((self.hidden_layers, self.egreedy, self.network_storage))
 
@@ -26,10 +27,6 @@ class DQNPlayer(TensorflowPlayer):
         if obj != None:
             self.network.load(self.network_storage)
             self.hidden_layers, self.egreedy, self.network_storage = pickle.loads(obj)
-
-    def set_session(self, session):
-        ''' set tensorflow session '''
-        self.network.set_session(session)
 
     @staticmethod
     def convert_state(state):
@@ -50,6 +47,7 @@ class DQNPlayer(TensorflowPlayer):
             # [0:8] is no stone occupied
             # [9:17] is other stone occupied
             # [18:26] is my stone occupied
+            # in some paper, they are using conv2d
             board = [1 if x == 0 else 0 for x in state]
             board.extend([1 if x == 1 else 0 for x in state])
             board.extend([1 if x == -1 else 0 for x in state])
@@ -92,4 +90,7 @@ class DQNPlayer(TensorflowPlayer):
                                    reward,
                                    converted_next_state,
                                    done)
+
+    def _episode_feedback(self, reward):
+        # To reduce no of fitting times
         self.network.study()

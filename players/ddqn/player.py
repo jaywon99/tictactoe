@@ -3,13 +3,13 @@
 import random
 import pickle
 
-from boardAI import TensorflowPlayer
+from boardAI import AbstractPlayer
 from tictactoe import OptimalBoard
 
 from .ddqn import DDQN
 
 INPUT_SIZE = 18
-class DDQNPlayer(TensorflowPlayer):
+class DDQNPlayer(AbstractPlayer):
     ''' DDQN Learning Agent '''
     def __init__(self, egreedy=0.2, hidden_layers=[54, 54], learing_rate=0.001, network_storage=None, *args, **kwargs):
         self.hidden_layers = hidden_layers
@@ -26,10 +26,6 @@ class DDQNPlayer(TensorflowPlayer):
         if obj != None:
             self.network.load(self.network_storage)
             self.hidden_layers, self.egreedy, self.network_storage = pickle.loads(obj)
-
-    def set_session(self, session):
-        ''' set tensorflow session '''
-        self.network.set_session(session)
 
     @staticmethod
     def convert_state(state):
@@ -92,4 +88,7 @@ class DDQNPlayer(TensorflowPlayer):
                                    reward,
                                    converted_next_state,
                                    done)
+
+    def _episode_feedback(self, reward):
+        # To reduce no of fitting times
         self.network.study()

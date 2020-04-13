@@ -4,12 +4,7 @@ from collections import deque
 import random
 import numpy as np
 
-# import tensorflow as tf
-import tensorflow.compat.v1 as tf
-
 from .dqn import DQN
-
-tf.disable_v2_behavior()
 
 TARGET_UPDATE_FREQUENCY = 16
 TRAINSET_SIZE = 100000
@@ -22,11 +17,9 @@ class DDQN():
     def __init__(self, layers=None, lr=0.001):
         # super().__init__([18, 54, 54, 9], name, lr)
         self.main = DQN(layers, "main", lr)
-        self.target = DQN(layers, "target", lr)
+        self.target = self.main.clone("target")
         self.train_set = deque(maxlen=TRAINSET_SIZE)
-        self.copy_dqn = self.get_copy_var_ops(self.target.net_name, self.main.net_name)
         self.study_counter = 0
-        self.session = None
 
     def predict_one(self, state):
         ''' predict next action '''
@@ -77,11 +70,8 @@ class DDQN():
         # print(next_best_action)
         # calculating expected Q-value by using the action a selected above.
         q_estimated = self.predict_by_target(next_state_array, next_best_action)
-        # print(q_estimated)
         q_target = reward_array + DISCOUNT_RATE * q_estimated * ~done_array
-        # print(Q_target)
         y_batch[np.arange(len(x_batch)), action_array] = q_target
-        # print(y_batch)
 
         loss, _ = self.update(x_batch, y_batch)
 
@@ -94,24 +84,7 @@ class DDQN():
 
     def copy(self):
         ''' copy network variables '''
-        return self.session.run(self.copy_dqn)
-
-    # main to target
-    @staticmethod
-    def get_copy_var_ops(dest_scope_name, src_scope_name):
-        ''' prepare to copy network variables and get holder (check tensorflow) '''
-        # Copy variables src_scope to dest_scope
-        op_holder = []
-
-        src_vars = tf.get_collection(
-            tf.GraphKeys.TRAINABLE_VARIABLES, scope=src_scope_name)
-        dest_vars = tf.get_collection(
-            tf.GraphKeys.TRAINABLE_VARIABLES, scope=dest_scope_name)
-
-        for src_var, dest_var in zip(src_vars, dest_vars):
-            op_holder.append(dest_var.assign(src_var.value()))
-
-        return op_holder
+        self.target.set_weights(self.main.get_weights())
 
     def save(self, filename):
         ''' save network variables '''
@@ -120,11 +93,4 @@ class DDQN():
     def load(self, filename):
         ''' load network variables '''
         self.main.load(filename)
-        self.copy()
-
-    def set_session(self, session):
-        ''' set tensorflow session '''
-        self.session = session
-        self.main.set_session(session)
-        self.target.set_session(session)
         self.copy()

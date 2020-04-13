@@ -170,10 +170,6 @@ class AbstractPlayer:
     def color(self, value):
         self._color = value
 
-class TensorflowPlayer(AbstractPlayer):
-    def set_session(self):
-        raise NotImplementedError
-
 class RandomPlayer(AbstractPlayer):
     ''' random player '''
     def _choose(self, state, available_actions):

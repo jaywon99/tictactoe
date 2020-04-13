@@ -1,30 +1,16 @@
 import sys
 
-from boardAI import RandomPlayer, Arena, PlayerMode, TensorflowPlayer
+from boardAI import RandomPlayer, Arena, PlayerMode
 from tictactoe import TicTacToeBoard
 from players import load_player
-
-def check_tensorflow_session(players):
-    if len(players) == 0:
-        return
-
-    # TODO: Keras로 바꿀 것
-    import tensorflow.compat.v1 as tf
-    tf.disable_v2_behavior()
-
-    sess = tf.Session()
-    for player in players:
-        player.set_session(sess)
-
-    sess.run(tf.global_variables_initializer())
 
 board = TicTacToeBoard()
 # player1 = load_player(name="RandomPlayer1", storage="models/random_playerX", cls="RandomPlayer")
 # player1 = load_player(name="PTablePlayer1", storage="models/ptable_playerX", cls='PredictionTablePlayer')
 # player1 = load_player(name="QPlayerX", storage="models/q_playerX", cls="QLearningPlayer")
 # player1 = load_player(name="DQNPlayerX", storage="models/dqn_playerX", cls="DQNPlayer", network_storage='./models/dqn1.ckpt')
-# player1 = load_player(name="DDQNPlayerX", storage="models/ddqn_playerX", cls="DDQNPlayer", network_storage='./models/ddqn1.ckpt')
-player1 = load_player(name="Human1", storage="models/human_player1", cls="HumanPlayer")
+player1 = load_player(name="DDQNPlayerX", storage="models/ddqn_playerX", cls="DDQNPlayer", network_storage='./models/ddqn1.ckpt')
+# player1 = load_player(name="Human1", storage="models/human_player1", cls="HumanPlayer")
 # player1 = load_player(name="NegamaxPlayer1", storage="models/negamax_player1", cls="NegamaxPlayer")
 # player1 = load_player(name="MCTSRandomPlayer1", storage="models/mcts_random_player1", cls="MCTSRandomPlayer")
 # player2 = load_player(name="RandomPlayer2", storage="models/random_player2", cls="RandomPlayer")
@@ -35,14 +21,6 @@ player1 = load_player(name="Human1", storage="models/human_player1", cls="HumanP
 # player2 = load_player(name="Human2", storage="models/human_player2", cls="HumanPlayer")
 # player2 = load_player(name="NegamaxPlayer2", storage="models/negamax_player2", cls="NegamaxPlayer")
 player2 = load_player(name="MCTSRandomPlayer2", storage="models/mcts_random_player2", cls="MCTSRandomPlayer")
-
-tf_players = []
-if isinstance(player1, TensorflowPlayer):
-    tf_players.append(player1)
-if isinstance(player2, TensorflowPlayer):
-    tf_players.append(player2)
-
-check_tensorflow_session(tf_players)
 
 arena_train = Arena(board, [player1, player2], mode=PlayerMode.TRAIN)
 arena_play = Arena(board, [player1, player2], mode=PlayerMode.PLAY)

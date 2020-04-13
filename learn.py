@@ -1,24 +1,9 @@
 import sys
 import random
 
-from boardAI import RandomPlayer, Arena, PlayerMode, TensorflowPlayer
+from boardAI import RandomPlayer, Arena, PlayerMode
 from tictactoe import TicTacToeBoard
 from players import load_player
-
-def check_tensorflow_session(players):
-    if len(players) == 0:
-        return
-
-    # TODO: Keras로 바꿀 것
-    import tensorflow.compat.v1 as tf
-    tf.disable_v2_behavior()
-
-    sess = tf.Session()
-    for player in players:
-        if isinstance(player, TensorflowPlayer):
-            player.set_session(sess)
-
-    sess.run(tf.global_variables_initializer())
 
 board = TicTacToeBoard()
 players = []
@@ -29,7 +14,6 @@ players.append(load_player(name="DQNPlayer1", storage="models/dqn_player1", cls=
 players.append(load_player(name="DDQNPlayer1", storage="models/ddqn_player1", cls="DDQNPlayer", network_storage='./models/ddqn1.ckpt'))
 players.append(load_player(name="NegamaxPlayer", storage="models/negamax_player1", cls="NegamaxPlayer"))
 players.append(load_player(name="MCTSRandomPlayer", storage="models/mcts_random_player1", cls="MCTSRandomPlayer"))
-check_tensorflow_session(players)
 
 # arena_train.reset()
 # arena_train.duel(render='human')
