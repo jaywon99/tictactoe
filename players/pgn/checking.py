@@ -13,6 +13,7 @@ tf.disable_v2_behavior()
 AGENT1_DATA_PATH = "./models/pgn1.ckpt"
 AGENT2_DATA_PATH = "./models/pgn2.ckpt"
 
+
 def build_agent():
     ''' build agent for learning '''
     # create pgn agent1 & agent2
@@ -28,6 +29,7 @@ def build_agent():
     agent2.load(AGENT2_DATA_PATH)
 
     return agent1, agent2
+
 
 def checking(env, best_player):
     ''' Policy Gradient checking '''

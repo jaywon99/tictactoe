@@ -3,6 +3,7 @@ import pickle
 
 from .const import PlayerMode
 
+
 class AbstractPlayer:
     ''' Abstract Agent '''
 
@@ -12,10 +13,9 @@ class AbstractPlayer:
     HISTORY_REWARD = 3
     HISTORY_DONE = 4
 
-    # TODO: 1. add store/load, 2. ELO score, 3. inherited classes
     def __init__(self, name, storage):
-        assert(name!=None)
-        assert(storage!=None)
+        assert(name is not None)
+        assert(storage is not None)
 
         self.history = []
         self._player_mode = PlayerMode.TRAIN
@@ -42,6 +42,10 @@ class AbstractPlayer:
             self._train_mode = True
         else:
             self._train_mode = False
+
+    @property
+    def name_with_color(self):
+        return self.color + '-' + self.name
 
     def _reset(self):
         ''' reset agent status internal (real class implement this) '''
@@ -78,7 +82,6 @@ class AbstractPlayer:
         ''' internal code for next_action '''
         raise NotImplementedError
 
-    # TODO: refactor: change name from next_action to choose/decide/etc
     def choose(self, state, available_actions):
         ''' call _next_action and save play history
         '''
@@ -101,7 +104,8 @@ class AbstractPlayer:
         if self.is_train_mode:
             self._feedback(self.history[-1][self.HISTORY_STATE],     # state
                            self.history[-1][self.HISTORY_ACTION],     # action
-                           self.history[-1][self.HISTORY_NEXT_STATE],     # next_state
+                           # next_state
+                           self.history[-1][self.HISTORY_NEXT_STATE],
                            self.history[-1][self.HISTORY_REWARD],     # reward
                            self.history[-1][self.HISTORY_DONE])     # done
 
@@ -118,7 +122,6 @@ class AbstractPlayer:
         if self.is_train_mode:
             self._episode_feedback(reward)
 
-    # TODO: add serialization scheme
     def save(self):
         ''' save player info to storage. please do not override it.
         please override serialize.
@@ -136,7 +139,7 @@ class AbstractPlayer:
             with open(self.storage, 'rb') as f:
                 self._elo, self._n_playes, extra_obj = pickle.load(f)
                 self.deserialize(extra_obj)
-        except:
+        except Exception:
             self._elo = 1200
             self._n_playes = 0
             self.deserialize(None)
@@ -160,15 +163,16 @@ class AbstractPlayer:
 
     @elo.setter
     def elo(self, value):
-        self._elo = int(value+0.5)
+        self._elo = int(value + 0.5)  # round up
 
     @property
     def color(self):
         return self._color
-        
+
     @color.setter
     def color(self, value):
         self._color = value
+
 
 class RandomPlayer(AbstractPlayer):
     ''' random player '''

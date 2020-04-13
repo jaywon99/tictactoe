@@ -9,11 +9,15 @@ from tictactoe import OptimalBoard
 from .ddqn import DDQN
 
 INPUT_SIZE = 18
+
+
 class DDQNPlayer(AbstractPlayer):
     ''' DDQN Learning Agent '''
+
     def __init__(self, egreedy=0.2, hidden_layers=[54, 54], learing_rate=0.001, network_storage=None, *args, **kwargs):
         self.hidden_layers = hidden_layers
-        self.network = DDQN(layers=[INPUT_SIZE] + hidden_layers + [9], lr=learing_rate)
+        self.network = DDQN(layers=[INPUT_SIZE]
+                            + hidden_layers + [9], lr=learing_rate)
         self.egreedy = egreedy
         self.network_storage = network_storage
         super().__init__(*args, **kwargs)
@@ -23,9 +27,10 @@ class DDQNPlayer(AbstractPlayer):
         return pickle.dumps((self.hidden_layers, self.egreedy, self.network_storage))
 
     def deserialize(self, obj):
-        if obj != None:
+        if obj is not None:
             self.network.load(self.network_storage)
-            self.hidden_layers, self.egreedy, self.network_storage = pickle.loads(obj)
+            self.hidden_layers, self.egreedy, self.network_storage = pickle.loads(
+                obj)
 
     @staticmethod
     def convert_state(state):
@@ -55,7 +60,8 @@ class DDQNPlayer(AbstractPlayer):
 
     def _choose(self, state, available_actions):
         optimal_board = OptimalBoard(state)
-        converted_actions = optimal_board.convert_action_to_optimal(available_actions)
+        converted_actions = optimal_board.convert_action_to_optimal(
+            available_actions)
         converted_state = self.convert_state(optimal_board.optimal_board)
         ###
         if self.is_train_mode:
@@ -69,7 +75,8 @@ class DDQNPlayer(AbstractPlayer):
         if action not in converted_actions:
             # 여기에 뭐를 학습으로 넣을 지 고민
             # 아니면, predict_one에서 필터를 넣을 지 고민
-            self.network.add_train_set(converted_state, action, -1, self.convert_state([-1]*9), True)
+            self.network.add_train_set(
+                converted_state, action, -1, self.convert_state([-1] * 9), True)
             action = random.choice(converted_actions)
 
         original_action = optimal_board.convert_action_to_original(action)

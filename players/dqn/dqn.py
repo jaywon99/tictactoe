@@ -8,8 +8,10 @@ TRAINSET_SIZE = 100000
 SAMPLE_SIZE = 64
 DISCOUNT_RATE = 0.999
 
+
 class DQN(DNN):
     ''' Deep Q Network module '''
+
     def __init__(self, layers=None, name="main", lr=0.0001):
         super().__init__(layers, name, lr)
         self.train_set = deque(maxlen=TRAINSET_SIZE)

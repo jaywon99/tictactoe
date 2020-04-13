@@ -1,9 +1,10 @@
 import math
-from enum import Enum
 
 from boardAI import AbstractBoard, GameResult
 
 # TODO: 자료 형식을 정의하자 (1. internal, 2. between player, 3. rendering)
+
+
 class TicTacToeBoard(AbstractBoard):
     WINNING_LINES = [[0, 1, 2],
                      [3, 4, 5],
@@ -14,7 +15,7 @@ class TicTacToeBoard(AbstractBoard):
                      [0, 4, 8],
                      [2, 4, 6]]
 
-    ALL_COLORS = {0:' ', 1:'O', -1:'X'}    # 0, 1, -1
+    ALL_COLORS = {0: ' ', 1: 'O', -1: 'X'}    # 0, 1, -1
     COLORS = ['O', 'X']
     COLOR_TO_INTERNAL = {'O': 1, 'X': -1}
 
@@ -30,7 +31,7 @@ class TicTacToeBoard(AbstractBoard):
     def reset(self):
         super().reset()
         # 0 means EMPTY, 1 means Player #1, -1 means Player #2
-        self._board = [0]*9
+        self._board = [0] * 9
         self._n_turn = 0
 
     def get_colors(self):
@@ -43,8 +44,9 @@ class TicTacToeBoard(AbstractBoard):
     def _render_for_human(self):
         print('---+---+----')
         for row in range(0, 9, 3):
-            for idx in range(row, row+3):
-                print('', TicTacToeBoard.ALL_COLORS[self._board[idx]], '|', end='')
+            for idx in range(row, row + 3):
+                print(
+                    '', TicTacToeBoard.ALL_COLORS[self._board[idx]], '|', end='')
             print('')
             print('---+---+----')
         print('-------------------------------')

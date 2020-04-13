@@ -1,8 +1,8 @@
 import math
 
 from .const import PlayerMode, GameResult
-from .player import AbstractPlayer
 from .board import AbstractBoard
+
 
 class PlayerList:
     def __init__(self, players, colors):
@@ -36,11 +36,12 @@ class PlayerList:
     def __len__(self):
         return len(self._players)
 
-class Arena:    
+
+class Arena:
     def __init__(self, board: AbstractBoard, players, mode=PlayerMode.TRAIN, K=32):
         self._board = board
+        # set colors to player and make list
         self._players = PlayerList(players, board.get_colors())
-        # TODO: set colors for players
         self._mode = mode
         self.K = K
         self.reset_results()
@@ -52,11 +53,12 @@ class Arena:
     def reset_results(self):
         self._results = {'TIE': 0}
         for player in self._players:
-            self.results[player.color+'-'+player.name] = 0
+            self.results[player.name_with_color] = 0
 
-    def duel(self, render = None):
+    def duel(self, render=None):
         ''' Play duel.
-        render: depend on board, string (ex: False = no display, human = "human visible")
+        render: depend on board, string
+        (ex: False = no display, human = "human visible")
         '''
         self.reset()
 
@@ -72,11 +74,12 @@ class Arena:
             (state, available_actions) = self._board.get_status(player.color)
 
             if player.is_played():   # is this really required???
-                player.feedback(state, reward, False)   # In board game, feedback is coming after other player played.
+                # In board game, feedback is coming after other player played.
+                player.feedback(state, reward, False)
 
             action = player.choose(state, available_actions)
             # print(player.name, action)
-            (reward, result, _) = self._board.play(action, player.color) # TODO: player, action both need
+            (reward, result, _) = self._board.play(action, player.color)
             # print(reward, result)
             # if recorded:
             #     history.append(action)
@@ -99,11 +102,10 @@ class Arena:
         if reward == 0:
             self._results['TIE'] += 1
         else:
-            self._results[player.color+'-'+player.name] += 1 # TODO: add COLOR
+            self._results[player.name_with_color] += 1
 
         # FEEDBACK
         self._duel_feedback(reward, player)
-
 
         # if recorded:
         #     return (reward, history)
@@ -111,9 +113,10 @@ class Arena:
 
     def _duel_feedback(self, reward, winner):
         for each_player in self._players:
-            (state, _) = self._board.get_status(each_player.color)                
+            (state, _) = self._board.get_status(each_player.color)
             if reward == 0:
-                each_player.feedback(state, reward, True) # reward = 0, done = True
+                # reward = 0, done = True
+                each_player.feedback(state, reward, True)
                 each_player.episode_feedback(reward)
             else:
                 if winner == each_player:
@@ -122,7 +125,6 @@ class Arena:
                 else:
                     each_player.feedback(state, -reward, True)
                     each_player.episode_feedback(-reward)
-
 
     def _calculate_elo(self, reward, winner):
         ''' calculate ELO logic
@@ -135,7 +137,7 @@ class Arena:
         r_sum = 0.0
         r = [0] * len(self._players)
         for idx, each_player in enumerate(self._players):
-            r[idx] = 10**(each_player.elo/400)
+            r[idx] = 10**(each_player.elo / 400)
             r_sum += r[idx]
         # print(r, r_sum)
         r_prime = [0] * len(self._players)
@@ -154,4 +156,3 @@ class Arena:
     @property
     def results(self):
         return self._results
-

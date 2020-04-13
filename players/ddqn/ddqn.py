@@ -12,8 +12,10 @@ SAMPLE_SIZE = 64
 DISCOUNT_RATE = 0.95
 FREQUENT_COPY = 16
 
+
 class DDQN():
     ''' Double Deep Q Learning Algorithm '''
+
     def __init__(self, layers=None, lr=0.001):
         # super().__init__([18, 54, 54, 9], name, lr)
         self.main = DQN(layers, "main", lr)
@@ -66,10 +68,12 @@ class DDQN():
         # argmax(Q(s_t1, *)) = np.argmax(self.predict(next_state_array))
         next_predict = self.predict(next_state_array)
         # print(next_predict)
-        next_best_action = np.argmax(next_predict, axis=1)  # 이걸 row/col을 바꿔야 할지..
+        # 이걸 row/col을 바꿔야 할지..
+        next_best_action = np.argmax(next_predict, axis=1)
         # print(next_best_action)
         # calculating expected Q-value by using the action a selected above.
-        q_estimated = self.predict_by_target(next_state_array, next_best_action)
+        q_estimated = self.predict_by_target(
+            next_state_array, next_best_action)
         q_target = reward_array + DISCOUNT_RATE * q_estimated * ~done_array
         y_batch[np.arange(len(x_batch)), action_array] = q_target
 
