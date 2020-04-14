@@ -134,7 +134,7 @@ class MCTSRandomPlayer(AbstractPlayer):
     def select_best_move(self, stats, depth, board, color):
         """Select the best move at the end of the Monte Carlo tree search"""
 
-        bestscore = 0
+        bestscore = -1
         bestmove = None
         total_n = 0
 
@@ -146,9 +146,10 @@ class MCTSRandomPlayer(AbstractPlayer):
                 continue
             total_n += n
             if self.DEBUG: print('Move %d score: %d/%d (%0.1f%%)' % (action, w, n, w/n*100))
-            if n > bestscore or (n == bestscore and random.random() <= 0.5): # 가장 많이 방문해 본 길을 따라 간다. WHY???
+            score = w/n
+            if score > bestscore or (score == bestscore and random.random() <= 0.5): # 가장 많이 방문해 본 길을 따라 간다. WHY???
                 bestmove = action
-                bestscore = n
+                bestscore = score
 
         assert bestmove is not None
 
