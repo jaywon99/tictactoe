@@ -1,7 +1,7 @@
 # tictactoe
 
 * MAKE LIBRARY
-** gym like library (need to include gym??)
+** gym like library - convert to boardAI (my framework)
 ** agent framework and duel framework
 
 * v1 - learn from random play - not working well
@@ -10,9 +10,11 @@
 * v4 - using minimax: DONE
 * v4-1 - alpha-beta-pruning: DONE
 * v4-2 - transposition table: DONE
+* v5 - DQN (Deep Q Learning)
+* v5-1 - DDQN
+* v6 - Monte Carlo Tree Search
+* v7 - ELO support
 
-* ADD check quality module - calculate result "BOT vs traverse all case"
-
-* LEFT - DQN / Policy Network / Monte Carlo Tree Search
+* LEFT - Policy Network  
 
 

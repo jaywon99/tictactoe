@@ -42,7 +42,10 @@ for i in range(MAX_ROUND):
             players, 2), mode=PlayerMode.PLAY)
         arena_play.reset()
         arena_play.duel(render=None)
-    print("PLAY", i * EPOCH, [str(p.elo) for p in players])
+
+    result = ["PLAY", str(i * EPOCH)]
+    result.extend([str(p.elo) for p in players])
+    print(",".join(result))
 
     for player in players:
         player.save()
