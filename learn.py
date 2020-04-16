@@ -8,6 +8,8 @@ board = TicTacToeBoard()
 players = []
 players.append(load_player(name="RandomPlayer1",
                            storage="models/random_player1", cls="RandomPlayer"))
+players.append(load_player(name="RandomPlusPlayer1",
+                           storage="models/randomplus_player1", cls="RandomPlusPlayer"))
 players.append(load_player(name="PTablePlayer1",
                            storage="models/ptable_player1", cls='PredictionTablePlayer'))
 players.append(load_player(name="QPlayer1",
@@ -30,6 +32,9 @@ players.append(load_player(name="MCTSRandomPlayer",
 MAX_ROUND = 1000
 EPOCH = 100
 
+print(",".join(["PLAY","CNT","RandomPlayer", "RandomPlusPlayer", 
+                "PredictionTablePlayer", "QLearningPlayer", "DQNPlayer", 
+                "DDQNPlayer", "NegamaxPlayer", "MCTSRandomPlayer"]))
 for i in range(MAX_ROUND):
     for _ in range(EPOCH):
         arena_train = Arena(board, random.sample(

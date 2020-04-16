@@ -5,6 +5,8 @@ from players import load_player
 board = TicTacToeBoard()
 # player1 = load_player(name="RandomPlayer1",
 #                       storage="models/random_playerX", cls="RandomPlayer")
+player1 = load_player(name="RandomPlusPlayer1",
+                      storage="models/randomplus_playerX", cls="RandomPlusPlayer")
 # player1 = load_player(name="PTablePlayer1",
 #                       storage="models/ptable_playerX", cls='PredictionTablePlayer')
 # player1 = load_player(
@@ -13,14 +15,16 @@ board = TicTacToeBoard()
 #                       cls="DQNPlayer", network_storage='./models/dqn1.ckpt')
 # player1 = load_player(name="DDQNPlayerX", storage="models/ddqn_playerX",
 #                       cls="DDQNPlayer", network_storage='./models/ddqn1.ckpt')
-player1 = load_player(
-    name="Human1", storage="models/human_player1", cls="HumanPlayer")
+# player1 = load_player(
+#     name="Human1", storage="models/human_player1", cls="HumanPlayer")
 # player1 = load_player(name="NegamaxPlayer1",
 #                       storage="models/negamax_player1", cls="NegamaxPlayer")
 # player1 = load_player(name="MCTSRandomPlayer1",
 #                       storage="models/mcts_random_player1", cls="MCTSRandomPlayer")
 # player2 = load_player(name="RandomPlayer2",
 #                       storage="models/random_player2", cls="RandomPlayer")
+# player2 = load_player(name="RandomPlusPlayer2",
+#                       storage="models/randomplus_player2", cls="RandomPlusPlayer")
 # player2 = load_player(name="PTablePlayer2",
 #                       storage="models/ptable_player2", cls='PredictionTablePlayer')
 # player2 = load_player(

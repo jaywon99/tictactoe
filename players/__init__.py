@@ -7,12 +7,15 @@ from .dqn import DQNPlayer
 from .ddqn import DDQNPlayer
 from .minimax import NegamaxPlayer
 from .mcts import MCTSRandomPlayer
+from .randomplus import RandomPlusPlayer
 
 def load_player(name=None, storage=None, cls=None, *args, **kwargs):
     if cls == 'HumanPlayer':
         return HumanPlayer(name=name, storage=storage, *args, **kwargs)
     if cls == 'RandomPlayer':
         return RandomPlayer(name=name, storage=storage, *args, **kwargs)
+    if cls == 'RandomPlusPlayer':
+        return RandomPlusPlayer(name=name, storage=storage, *args, **kwargs)
     if cls == 'PredictionTablePlayer':
         return PredictionTablePlayer(name=name, storage=storage, *args, **kwargs)
     if cls == 'QLearningPlayer':
